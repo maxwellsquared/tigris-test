@@ -44,9 +44,32 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<Data>, itemId
 }
 
 async function handlePut(req: NextApiRequest, res: NextApiResponse<Data>) {
-  // TODO: Implement me
+  try {
+    const item = JSON.parse(req.body) as TodoItem;
+    const itemsCollection = tigrisDb.getCollection<TodoItem>(COLLECTION_NAME);
+    const updated = await itemsCollection.insertOrReplaceOne(item);
+    res.status(200).json({ result: updated });
+  } catch (err) {
+    const error = err as Error;
+    res.status(500).json({ error: error.message });
+  }
 }
 
-async function handleDelete(req: NextApiRequest, res: NextApiResponse<Data>, itemId: number) {
-  // TODO: Implement me
+async function handleDelete(
+  req: NextApiRequest,
+  res: NextApiResponse<Data>,
+  itemId: number
+) {
+  try {
+    const itemsCollection = tigrisDb.getCollection<TodoItem>(COLLECTION_NAME);
+    const status = (await itemsCollection.deleteOne({ id: itemId })).status;
+    if (status === "deleted") {
+      res.status(200).json({});
+    } else {
+      res.status(500).json({ error: `Failed to delete ${itemId}` });
+    }
+  } catch (err) {
+    const error = err as Error;
+    res.status(500).json({ error: error.message });
+  }
 }

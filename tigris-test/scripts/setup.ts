@@ -10,8 +10,11 @@ if (process.env.NODE_ENV === undefined) {
   }
 }
 
+
 async function main() {
-  // TODO: Implement me
+  // setup client and register schemas
+  const tigrisClient = new Tigris();
+  await tigrisClient.registerSchemas("models/tigris");
 }
 
 main();
